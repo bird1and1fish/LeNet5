@@ -7,6 +7,8 @@ from torchvision.transforms import ToPILImage
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
+show = ToPILImage()
+
 # 数据转化为tensor格式
 data_transform = transforms.Compose([transforms.ToTensor()])
 
@@ -38,8 +40,9 @@ classes = [
 
 # 进入到验证阶段
 model.eval()
-for i in range(20):
+for i in range(80,90,1):
     x, y = test_dataset[i][0], test_dataset[i][1]
+    show(x).show()
     x = Variable(torch.unsqueeze(x, dim=0).float(), requires_grad=True).to(device)
     # x = x.to(device)
     with torch.no_grad():
