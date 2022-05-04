@@ -11,7 +11,8 @@ summary(model, (1, 28, 28))
 for name in model.state_dict():
     print("################" + name + "################")
     # print(model.state_dict()[name])
-    file = open("weight/" + name + ".txt", "w")
+    folder = 'weight/normal/'
+    file = open(folder + name + ".txt", "w")
     file.write(str(model.state_dict()[name]))
     file.close()
 
