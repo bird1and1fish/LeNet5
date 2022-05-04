@@ -10,7 +10,9 @@ from torch.utils.data import DataLoader
 show = ToPILImage()
 
 # 数据转化为tensor格式
-data_transform = transforms.Compose([transforms.ToTensor()])
+normalize = transforms.Normalize([0.1307], [0.3081])
+data_transform = transforms.Compose([transforms.ToTensor(),
+                                     normalize])
 
 # 加载测试数据集
 test_dataset = datasets.MNIST(root='./data', train=False, transform=data_transform, download=True)
@@ -42,7 +44,7 @@ classes = [
 model.eval()
 for i in range(80,90,1):
     x, y = test_dataset[i][0], test_dataset[i][1]
-    show(x).show()
+    # show(x).show()
     x = Variable(torch.unsqueeze(x, dim=0).float(), requires_grad=True).to(device)
     # x = x.to(device)
     with torch.no_grad():
