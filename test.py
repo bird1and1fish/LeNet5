@@ -12,7 +12,7 @@ data_transform = transforms.Compose([transforms.ToTensor()])
 
 # 加载测试数据集
 test_dataset = datasets.MNIST(root='./data', train=False, transform=data_transform, download=True)
-test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=16, shuffle=True)
+# test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=16, shuffle=True)
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -41,7 +41,7 @@ model.eval()
 for i in range(20):
     x, y = test_dataset[i][0], test_dataset[i][1]
     x = Variable(torch.unsqueeze(x, dim=0).float(), requires_grad=True).to(device)
-    x = x.to(device)
+    # x = x.to(device)
     with torch.no_grad():
         pred = model(x)
         predicted, actual = classes[torch.argmax(pred[0])], classes[y]
