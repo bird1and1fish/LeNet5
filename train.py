@@ -13,8 +13,7 @@ plt.rcParams['axes.unicode_minus'] = False
 normalize = transforms.Normalize([0.1307], [0.3081])
 
 # 数据转化为tensor格式
-data_transform = transforms.Compose([transforms.ToTensor(),
-                                     normalize])
+data_transform = transforms.Compose([transforms.ToTensor()])
 
 # 加载训练数据集
 train_dataset = datasets.MNIST(root='./data', train=True, transform=data_transform, download=True)
@@ -35,8 +34,8 @@ loss_fn = nn.CrossEntropyLoss()
 # 定义一个优化器
 optimizer = torch.optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
 
-# 学习率每隔10轮，变为原来的0.1
-lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+# 学习率每隔10轮，变为原来的0.5
+lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
 # 定义画图函数
 def matplot_loss(train_loss, val_loss):

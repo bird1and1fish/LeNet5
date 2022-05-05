@@ -1,72 +1,113 @@
 import torch
 from torch import nn
 from net_quant import LeNet
-from torchvision import datasets, transforms
 import time
+import numpy as np
+from PIL import Image
+from torchvision import transforms
+from torchvision.datasets import ImageFolder
+from  torch.autograd import Variable
 
-normalize = transforms.Normalize([0.1307], [0.3081])
-# 数据转化为tensor格式
-data_transform = transforms.Compose([transforms.ToTensor(),
-                                     normalize])
+def read_8bit_img(filepath):
+    # 读取8bit数据
+    image = Image.open(filepath).convert('L')
+    resize = transforms.Resize([28, 28])
+    image = resize(image)
+    image = np.copy(image)
+    image = torch.tensor(image)
+    image = Variable(torch.unsqueeze(torch.unsqueeze(image, dim=0).int(), dim=0).int()).to(device)
+    image = image.clone().detach().to(device)
+    return image
 
-# 加载测试数据集
-test_dataset = datasets.MNIST(root='./data', train=False, transform=data_transform, download=True)
-test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=1000, shuffle=True)
+def read_float_img(filepath):
+    # ROOT_TEST = r'D:/ws_pytorch/LeNet5/data/mydata'
+    # test_transform = transforms.Compose([
+    #     transforms.Grayscale(num_output_channels=1),
+    #     transforms.Resize((28, 28)),
+    #     transforms.ToTensor()])
+    # test_dataset = ImageFolder(ROOT_TEST, transform=test_transform)
+    # image = test_dataset[0][0]
+    # image = Variable(torch.unsqueeze(image, dim=0).float(), requires_grad=True).to(device)
+    # image = image.clone().detach().to(device)
+
+    image = Image.open(filepath).convert('L')
+    resize = transforms.Resize([28, 28])
+    image = resize(image)
+    image = np.copy(image)
+    image = torch.tensor(image)
+    image = Variable(torch.unsqueeze(torch.unsqueeze(image, dim=0).float(), dim=0).float()).to(device)
+    image = image.clone().detach().to(device)
+    return image
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # 调用net定义的模型
-model = LeNet().to(device)
+model1 = LeNet().to(device)
+model1.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_model.pth"))
 
-model.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_model.pth"))
+model2 = LeNet().to(device)
+model2.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/quant_model.pth"))
+model2.load_quant(23, 12, 99, 13, 12, 141, 3, 11, 128, 13, 13, 126, 13, 12, 127)
 
 # 定义损失函数（交叉熵）
 loss_fn = nn.CrossEntropyLoss()
 
-def test(dataloader, model, loss_fn):
-    model.eval()
-    loss, current, n = 0.0, 0.0, 0
-    with torch.no_grad():
-        for X, y in dataloader:
-            # 前向传播
-            X, y = X.to(device), y.to(device)
-            output = model(X)
-            cur_loss = loss_fn(output, y)
-            _, pred = torch.max(output, axis=1)
-            cur_acc = torch.sum(y == pred) / output.shape[0]
-            loss += cur_loss.item()
-            current += cur_acc.item()
-            n = n + 1
-            test_loss = loss / n
-            test_acc = current / n
+# 分类类别
+classes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-            return test_loss, test_acc
+model1.eval()
+model2.eval()
+
+float_image1 = read_float_img('data/mydata/2/2.jpg')
+# float_image2 = read_float_img('data/mydata/4/4.jpg')
+byte_image1 = read_8bit_img('data/mydata/2/2.jpg')
+# byte_image2 = read_8bit_img('data/mydata/4/4.jpg')
 
 # 量化前测试
-start1 = time.time()
-for i in range(20):
-    test_loss, test_acc = test(test_dataloader, model, loss_fn)
-end1 = time.time()
 print("量化前测试")
-print("test_loss" + str(test_loss))
-print("test_acc" + str(test_acc))
+start1 = time.time()
+with torch.no_grad():
+    for i in range(1):
+        pred = model1(float_image1)
+end1 = time.time()
+predicted= classes[torch.argmax(pred[0])]
+print(f'predicted:"{predicted}"')
 print("耗时" + str(end1 - start1))
+
+# start3 = time.time()
+# with torch.no_grad():
+#     for i in range(1):
+#         pred1 = model1(float_image2)
+# end3 = time.time()
+# predicted1 = classes[torch.argmax(pred1[0])]
+# print(f'predicted:"{predicted1}"')
+# print("耗时" + str(end3 - start3))
 print("#" * 20)
 
 # 量化后测试
-model.linear_quant()
-start2 = time.time()
-for i in range(20):
-    test_loss, test_acc = test(test_dataloader, model, loss_fn)
-end2 = time.time()
+# model2.linear_quant()
 print("量化后测试")
-print("test_loss" + str(test_loss))
-print("test_acc" + str(test_acc))
+start2 = time.time()
+with torch.no_grad():
+    for i in range(1):
+        pred = model2(byte_image1)
+end2 = time.time()
+predicted = classes[torch.argmax(pred[0])]
+print(f'predicted:"{predicted}"')
 print("耗时" + str(end2 - start2))
-print("#" * 20)
+
+# start4 = time.time()
+# with torch.no_grad():
+#     for i in range(1):
+#         pred1 = model2(byte_image2)
+# end4 = time.time()
+# predicted1 = classes[torch.argmax(pred1[0])]
+# print(f'predicted:"{predicted1}"')
+# print("耗时" + str(end4 - start4))
+# print("#" * 20)
 
 
-# # 模型保存
+# 模型保存
 # folder = 'weight/quantization/'
 # for name in model.state_dict():
 #     # print("################" + name + "################")

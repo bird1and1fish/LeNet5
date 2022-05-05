@@ -11,8 +11,7 @@ show = ToPILImage()
 
 # 数据转化为tensor格式
 normalize = transforms.Normalize([0.1307], [0.3081])
-data_transform = transforms.Compose([transforms.ToTensor(),
-                                     normalize])
+data_transform = transforms.Compose([transforms.ToTensor()])
 
 # 加载测试数据集
 test_dataset = datasets.MNIST(root='./data', train=False, transform=data_transform, download=True)

@@ -14,8 +14,7 @@ normalize = transforms.Normalize([0.1307], [0.3081])
 test_transform = transforms.Compose([
     transforms.Grayscale(num_output_channels=1),
     transforms.Resize((28, 28)),
-    transforms.ToTensor(),
-    normalize])
+    transforms.ToTensor()])
 
 test_dataset = ImageFolder(ROOT_TEST, transform=test_transform)
 
@@ -33,7 +32,7 @@ num = len(test_dataset)
 
 for i in range(num):
     x, y = test_dataset[i][0], test_dataset[i][1]
-    show(x).show()
+    # show(x).show()
     x = Variable(torch.unsqueeze(x, dim=0).float(), requires_grad=True).to(device)
     x = x.clone().detach().to(device)
     with torch.no_grad():
