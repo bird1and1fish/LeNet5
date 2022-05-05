@@ -26,7 +26,6 @@ class LeNet(nn.Module):
         x = self.flatten(x)
         x = self.f6(x)
         x = self.output(x)
-
         return x
 
 if __name__ == "__main__":
