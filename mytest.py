@@ -22,7 +22,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = LeNet().to(device)
 
-model.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_model.pth"))
+model.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_prune_model.pth"))
 
 classes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 

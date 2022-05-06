@@ -139,3 +139,12 @@ for t in range(epoch):
 matplot_loss(loss_train, loss_val)
 matplot_acc(acc_train, acc_val)
 print('Done!')
+
+# 模型保存
+# folder = 'weight/normal/'
+# for name in model.state_dict():
+#     # print("################" + name + "################")
+#     # print(model.state_dict()[name])
+#     file = open(folder + name + ".txt", "w")
+#     file.write(str(model.state_dict()[name]))
+#     file.close()

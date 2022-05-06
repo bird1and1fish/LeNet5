@@ -23,7 +23,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model = LeNet().to(device)
 
 # 加载模型
-model.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_model.pth"))
+model.load_state_dict(torch.load("D:/ws_pytorch/LeNet5/save_model/best_prune_model.pth"))
 
 # 获取预测结果
 classes = [
