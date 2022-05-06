@@ -235,38 +235,38 @@ val(test_dataloader, model, loss_fn)
 print("#" * 20)
 
 # 量化后再训练验证
-epoch = 2
-min_acc = 0
-loss_train = []
-acc_train = []
-loss_val = []
-acc_val = []
-for t in range(epoch):
-    print(f'epoch{t+1}\n------------------')
-    train_loss, train_acc = train(train_dataloader, model, loss_fn, optimizer)
-    val_loss, val_acc = val(test_dataloader, model, loss_fn)
-
-    loss_train.append(train_loss)
-    acc_train.append(train_acc)
-    loss_val.append(val_loss)
-    acc_val.append(val_acc)
-
-    # 保存最好的模型权重
-    if val_acc >= min_acc:
-        folder = 'save_model'
-        if not os.path.exists(folder):
-            os.mkdir(folder)
-        min_acc = val_acc
-        print('save best model')
-        torch.save(model.state_dict(), folder+'/best_prune_model.pth')
-
-    if t == epoch - 1:
-        torch.save(model.state_dict(), folder+'/last_prune_model.pth')
-
-matplot_loss(loss_train, loss_val)
-matplot_acc(acc_train, acc_val)
-
-model.save_masks()
+# epoch = 20
+# min_acc = 0
+# loss_train = []
+# acc_train = []
+# loss_val = []
+# acc_val = []
+# for t in range(epoch):
+#     print(f'epoch{t+1}\n------------------')
+#     train_loss, train_acc = train(train_dataloader, model, loss_fn, optimizer)
+#     val_loss, val_acc = val(test_dataloader, model, loss_fn)
+#
+#     loss_train.append(train_loss)
+#     acc_train.append(train_acc)
+#     loss_val.append(val_loss)
+#     acc_val.append(val_acc)
+#
+#     # 保存最好的模型权重
+#     if val_acc >= min_acc:
+#         folder = 'save_model'
+#         if not os.path.exists(folder):
+#             os.mkdir(folder)
+#         min_acc = val_acc
+#         print('save best model')
+#         torch.save(model.state_dict(), folder+'/best_prune_model.pth')
+#
+#     if t == epoch - 1:
+#         torch.save(model.state_dict(), folder+'/last_prune_model.pth')
+#
+# matplot_loss(loss_train, loss_val)
+# matplot_acc(acc_train, acc_val)
+#
+# model.save_masks()
 
 # 保存模型
 # folder = 'weight/prune/'
